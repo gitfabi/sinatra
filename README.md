@@ -12,7 +12,8 @@ To run this code, it needs to:
 4 - Deploy the Guest OS and provisioning: 
   shell $ cd sinatra
   shell $ vagrant up
-    
+5 - To test the application running:
+  shell $ lynx 192.168.100.101    
 
 All provisioning tasks are taken care of within Vagrantfile, after guest OS creation.
 
