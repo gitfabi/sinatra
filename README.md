@@ -10,6 +10,7 @@ To run this code, it needs to:
 3 - Retrieve Vagrant file:
   shell $ git clone git@github.com:gitfabi/sinatra.git
 4 - Deploy the Guest OS and provisioning: 
+  shell $ cd sinatra
   shell $ vagrant up
     
 
