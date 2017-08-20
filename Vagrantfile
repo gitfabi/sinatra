@@ -148,18 +148,15 @@ uU/3sv6/j+JVczbRw3wVs9D4dltypwUHTmikwaCBcuhfuMJzTsgJf9w=
   echo "Securing the Server..."
 
   #Securing Shared memory
-  echo "Securing Shared memory..."
   echo "tmpfs /run/shm tmpfs defaults,noexec,nosuid 0 0" >> sudo tee /etc/fstab
   sudo mount -o remount -a
 
   #Enable ssh login for specific users
-  echo "Enable ssh login for ubuntu..."
   echo "AllowUsers ubuntu" >> sudo tee /etc/ssh/sshd_config
   sudo systemctl reload sshd.service
 
 
-  #Adding a security login banner and now showing kernel version at ssh sessions - with taking backup from the original files modified
-  echo "Adding security banner..."
+  #Adding a security login banner and not showing kernel version at ssh sessions - with taking backup from the original files modified
   echo "*** Authorized use only ***" > sudo tee /etc/issue.net
   sudo sed -i.bak 's/^#Banner/Banner/' /etc/ssh/sshd_config
   sudo sed -i.bak '$s/^/#/' /etc/update-motd.d/00-header
