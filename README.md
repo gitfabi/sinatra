@@ -1,70 +1,95 @@
+REA Systems Engineer practical task
+===================================
 
 
-Host OS:
-	CentOS 7.x
-	*yum groupinstall "GNOME Desktop"
-	CPU/MMU Virtualization enabled (Intel VT-x/AMD-V)
 
+
+
+
+Instructions for the reviewer which explain how your code should be executed
+----------------------------------------------------------------------------
+
+To run this code, it is needed to:
+1 - Prepare Host environment outlined in "Requirements for running"
+2 - Log in as normal user or root, if prefered - for this solution username 'local' has been created and used all along
+3 - Retrieve Vagrant file:
+  shell $ git clone git@github.com:gitfabi/sinatra.git
+4 - Deploy the Guest OS and provisioning: 
+  shell $ vagrant up
+    
+
+When the Guest OS is prepared, all provisioning tasks are taken care of within Vagrantfile. 
+
+
+
+
+Requirements for running
+------------------------
 
 
 System Requirements - packages and their dependencies:
-	Git
-		yum install git
-	Desktop Virtualization using VirtualBox on CentOS 7.3
-		cd /etc/yum.repos.d/
-		wget http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo
-		yum -y install VirtualBox-5.1
-		Rebuild kernel modules with following command:
-		yum install gcc make
-		rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-		yum install binutils gcc make patch libgomp glibc-headers glibc-devel kernel-headers kernel-devel dkms
-		wget ftp://ftp.pbone.net/mirror/ftp.scientificlinux.org/linux/scientific/7.0/x86_64/updates/security/kernel-devel-3.10.0-327.el7.x86_64.rpm
-		yum install ./kernel-devel-3.10.0-327.el7.x86_64.rpm
-		Now we are ready to Build VirtualBox kernel modules
-		/usr/lib/virtualbox/vboxdrv.sh setup
-		To install VirtualBox Extension Pack:
-		- Find virtualbox release - ours is 5.1.26 - Browse below link: 
-		download.virtualbox.org/virtualbox/5.1.26
-	
-		Add VirtualBox User(s) to vboxusers Group
-		usermod -a -G vboxusers localuser
 
+- Host OS: CentOS 7.3
 
-	
-	Ansible
-	Vagrant
-		wget https://releases.hashicorp.com/vagrant/1.9.7/vagrant_1.9.7_x86_64.rpm
-		yum install ./vagrant_1.9.7_x86_64.rpm
+- Installing Git
+  $ sudo yum install git
 
-		vagrant init precise64 http://files.vagrantup.com/precise64
-		vagrant up
+- Desktop Virtualization using VirtualBox on CentOS 7.3
+  To allow VirtualBox utilize hardware resources from the Host OS, it's needed to have CPU/MMU Virtualization enabled (Intel VT-x/AMD-V). 
+  If Host OS is running in VMWare or similar products, then consult relevant documents from official web-site to enable nested virtualization.
+                
+  $ cd /etc/yum.repos.d/
+  $ sudo wget http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo
+  $ sudo yum -y install VirtualBox-5.1
 
-		" Getting Vagrant file from Fedora Project: https://fedoraproject.org/wiki/Vagrant "
-		
+  * Rebuild kernel modules with following command:
+  $ sudo rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  $ sudo yum -y install binutils gcc make patch libgomp glibc-headers glibc-devel kernel-headers kernel-devel dkms
+  * Now we are ready to Build VirtualBox kernel modules
+  $ sudo /usr/lib/virtualbox/vboxdrv.sh setup
+
+  * Add VirtualBox User(s) to vboxusers Group - substitue 'local' with the username currently logged in
+  $ sudo usermod -a -G vboxusers local
+
+- Installing Vagrant
+  $ sudo rpm -Uvh https://releases.hashicorp.com/vagrant/1.9.7/vagrant_1.9.7_x86_64.rpm
+
+- Installing lynx
+  $ sudo yum -y install lynx
 
 
 
+Explanation of assumptions and design choices
+---------------------------------------------
 
-	Python
+Assumptions:
+- This solution has been tested on CentOS 7.3-x_64 built from the scratch and should be portable to other Linux environments. However, to satisfy software requirements on the Host machine other than CentOS/RHEL/Fedora, some modifications needed for package installation, software repository and commands to have them installed.
 
-	Ruby
-		sudo apt-get -y  install ruby
-		sudo apt-get install bundler
-		cd /vagrant/simple-sinatra-app 
-		bundle install/vagrant/simple-sinatra-app
-
-		bundle install
-		bundle exec rackup
-		sudo bundle exec rackup -p 80
-		sudo bundle exec rackup -p 80 -o 10.0.2.15
+- It's assumed either 'root' user is used for package installation, or normal user has enough 'sudo' privilege to install applications on the Host machine
 
 
+- The Guest Operating System is Ubuntu 16.04 - the instance name is "ubuntu/xenial64", taken from Vagrant repository, and the URL is: "https://app.vagrantup.com/ubuntu/boxes/xenial64"
 
-- log in as normal user
-- mkdir REA	# create project directory
-- retrieve Vagrantfile from Github
-- vagrant up
-- 
+- To secure the application server, 'firewalld' service has been used. Alternatively, IPTables can be used.
+
+- For the sake of simplicity and ease of deployment, SHELL provisioning is used instead of Ansible. Ansible provisioning needs a working Python package on the Guest OS. Few Ubuntu instances from Vagrant repository were tried to utilize Ansible provisioning. They had Python package pre-installed, but some random issues with OS deploying on the VirtualBox were encountered.
+
+- Privat IP address of 192.168.100.101 is allocated for the guest machine. If this IP conflicts with your existing private IP settings, please substitue it with another IP in the Vagrantfile provided.
+
+- To make deployment easier, codes for runnign application provided by REA is automatically retrieved from Git repositoy. To do so, local user's public and private key is copied in ~ubuntu/.ssh folder to skip SSH key import required by 'git clone' for the newly created user in the guest OS.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

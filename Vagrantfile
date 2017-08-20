@@ -26,8 +26,6 @@ Vagrant.configure("2") do |config|
   # NOTE: This will enable public access to the opened port
   # config.vm.network "forwarded_port", guest: 80, host: 8080
 
-  config.vm.network "forwarded_port", guest: 80, host:8080
-
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine and only allow access
   # via 127.0.0.1 to disable public access
@@ -127,14 +125,8 @@ uU/3sv6/j+JVczbRw3wVs9D4dltypwUHTmikwaCBcuhfuMJzTsgJf9w=
   chmod 600 ~ubuntu/.ssh/id_rsa
 
 
-  #sudo chown ubuntu:ubuntu ~ubuntu/.ssh/known_hosts
   ssh-keyscan -H github.com >> ~ubuntu/.ssh/known_hosts
 
-  mkdir /vagrant/app
-
-  echo "changing to the shared folder"
-  cd /vagrant/app
-  echo `pwd`
 
   git config --global user.name "localuser"
   git config --global user.email "localuser@localhost" 
@@ -142,17 +134,19 @@ uU/3sv6/j+JVczbRw3wVs9D4dltypwUHTmikwaCBcuhfuMJzTsgJf9w=
 
 
   echo "Cloning Github repo..."
-  #ssh -T git@github.com
   git clone git@github.com:rea-cruitment/simple-sinatra-app.git
 
   echo "Installing Sinatra App..."
-  cd /vagrant/app/simple-sinatra-app
+  cd ./simple-sinatra-app
   sudo bundle install
 
   echo "Executing Sinatra App..."
   sudo bundle exec rackup -D -p 80 -o 192.168.100.101
 
+
+
   echo "Securing the Server..."
+
   #Securing Shared memory
   echo "Securing Shared memory..."
   echo "tmpfs /run/shm tmpfs defaults,noexec,nosuid 0 0" >> sudo tee /etc/fstab
@@ -172,16 +166,14 @@ uU/3sv6/j+JVczbRw3wVs9D4dltypwUHTmikwaCBcuhfuMJzTsgJf9w=
   sudo systemctl reload sshd.service
 
   # Hardening the Network layer
-  echo "Hardening the Network layer..."
   sudo sed -i.bak '/net.ipv[46].conf.all.accept_redirects/s/#net.ipv/net.ipv/' /etc/sysctl.conf
   sudo sysctl --system >/dev/null 2>&1
 
   # Enabling Host-based Firewall Service and only allow incomming TCP sessions to port 80 as per Applications requirements
-  echo "Host based Firewall..."
   sudo apt-get -y install firewalld >/dev/null 2>&1
   sudo firewall-cmd --add-port=80/tcp
 
-  echo "How to use: from commandline, type in: lynx 192.168.100.101"
+  echo "All Done! - How to use: on the Host machine, from commandline, type in: lynx 192.168.100.101"
 
 
 
