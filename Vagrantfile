@@ -77,7 +77,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", privileged: false, inline: <<-SHELL
 
   echo "Provisioning Application and environment setup... please wait"
-  sudo apt-get updat >/dev/null 2>&1
+  sudo apt-get update >/dev/null 2>&1
 
   echo "Installing ruby..."
   sudo apt-get -y  install ruby >/dev/null 2>&1
